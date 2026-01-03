@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR Generator - FlowX</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-red: #ff3333;
+            --secondary-red: #cc0000;
+            --accent-orange: #ff6600;
+            --accent-yellow: #ffcc00;
+            --glass-bg: rgba(30, 30, 30, 0.9);
+            --border-color: rgba(255, 100, 100, 0.2);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Rajdhani', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
+        
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body { 
+            background-color: #0a0a0a; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: radial-gradient(circle at 50% 20%, #331111 0%, #000 60%); 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        
+        .container-lock {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        .app-container { 
+            width: 100%;
+            height: 100vh;
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            color: white; 
+            background: rgba(10, 10, 10, 0.95); 
+            overflow: hidden; 
+            border: 1px solid rgba(255, 50, 50, 0.1);
+        }
+
+        @media (min-width: 769px) {
+            .app-container {
+                max-width: 414px;
+                height: 90vh;
+                border-radius: 15px;
+            }
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        
+        .anim-element { 
+            opacity: 0; 
+            animation: fadeIn 0.5s ease forwards; 
+        }
+        
+        .delay-1 { animation-delay: 0.1s; } 
+        .delay-2 { animation-delay: 0.2s; } 
+        .delay-3 { animation-delay: 0.3s; }
+
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px;
+            background: rgba(20, 20, 20, 0.9);
+            border-bottom: 1px solid rgba(255, 100, 100, 0.1);
+        }
+        
+        .header-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            color: #fff;
+            background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .icon-btn { 
+            background: rgba(255, 50, 50, 0.1);
+            width: 40px; 
+            height: 40px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            color: #ddd; 
+            font-size: 1.1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            text-decoration: none; 
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 50, 50, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px;
+            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card { 
+            background: rgba(25, 25, 25, 0.8); 
+            border-radius: 15px; 
+            padding: 20px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            margin-bottom: 20px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 50, 50, 0.3);
+            position: relative;
+            z-index: 2;
+            animation: pulseBorder 2s infinite ease-in-out;
+        }
+        
+        @keyframes pulseBorder {
+            0% {
+                border-color: rgba(255, 50, 50, 0.3);
+                box-shadow: 0 0 0 0 rgba(255, 50, 50, 0.4);
+            }
+            70% {
+                border-color: var(--primary-red);
+                box-shadow: 0 0 0 15px rgba(255, 50, 50, 0);
+            }
+            100% {
+                border-color: rgba(255, 50, 50, 0.3);
+                box-shadow: 0 0 0 0 rgba(255, 50, 50, 0);
+            }
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 25px;
+            text-align: center;
+            background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .input-box:focus {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-orange);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-box:focus ~ .input-icon {
+            color: #fff;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .generate-btn {
+            width: 100%; 
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+            border: none; 
+            border-radius: 12px;
+            color: white; 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 700;
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .generate-btn:active { 
+            transform: scale(0.98); 
+        }
+
+        .qrcode-container {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        #qrcode {
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255, 100, 100, 0.3);
+            margin-bottom: 20px;
+        }
+
+        #qrcode canvas {
+            display: block;
+        }
+
+        .download-btn {
+            width: 100%; 
+            padding: 15px;
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            border-radius: 12px;
+            color: white; 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 700;
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            display: none;
+        }
+        
+        .download-btn:hover {
+            background: rgba(255, 50, 50, 0.2);
+            border-color: var(--accent-orange);
+        }
+        
+        .download-btn:active { 
+            transform: scale(0.98); 
+        }
+
+        .info-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--accent-orange);
+            border-radius: 0 10px 10px 0;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box h4 {
+            color: var(--accent-orange);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            color: #aaa;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .navbar { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: rgba(20, 20, 20, 0.95); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 100, 100, 0.2); 
+            z-index: 1000; 
+        }
+        
+        .nav-item { 
+            font-size: 1.3rem; 
+            color: #666; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            position: relative; 
+            width: 45px; 
+            height: 35px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+        }
+        
+        .nav-item.active { 
+            color: var(--primary-red); 
+            transform: translateY(-3px);
+        }
+        
+        .nav-item.active::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -2px;
+            width: 5px; 
+            height: 5px; 
+            background: var(--primary-red);
+            border-radius: 50%; 
+            box-shadow: 0 0 10px var(--primary-red);
+        }
+
+        .nav-item:hover { 
+            color: var(--accent-orange); 
+        }
+
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: -100%; 
+            width: 85%;
+            max-width: 280px;
+            height: 100%; 
+            background: linear-gradient(180deg, #111 0%, #1a1a1a 100%); 
+            z-index: 999; 
+            transition: left 0.3s ease; 
+            border-right: 1px solid rgba(255, 50, 50, 0.2); 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+        }
+        
+        .sidebar.active { 
+            left: 0; 
+        }
+        
+        .sidebar-header { 
+            height: 160px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 50, 50, 0.3);
+        }
+        
+        .sidebar-title { 
+            color: white; 
+            font-family: 'Orbitron'; 
+            font-weight: 700; 
+            font-size: 1.3rem; 
+            text-shadow: 0 0 10px rgba(255, 50, 50, 0.5);
+        }
+        
+        .sidebar-menu { 
+            padding: 15px 0; 
+        }
+        
+        .sidebar-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 14px 20px; 
+            color: #ddd; 
+            font-family: 'Rajdhani', sans-serif;
+            text-decoration: none; 
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-item:hover { 
+            background: rgba(255, 50, 50, 0.1); 
+            border-left-color: var(--primary-red);
+            padding-left: 22px; 
+        }
+        
+        .sidebar-item i { 
+            width: 20px; 
+            margin-right: 12px; 
+            text-align: center; 
+            color: var(--accent-orange);
+        }
+        
+        .overlay-backdrop { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 998; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: 0.2s; 
+        }
+        
+        .overlay-backdrop.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.7rem;
+            font-family: 'Courier Prime';
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid rgba(255, 100, 100, 0.1);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(30, 30, 40, 0.95);
+            border: 1px solid var(--accent-orange);
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            z-index: 2000;
+            box-shadow: 0 5px 15px rgba(255, 100, 100, 0.3);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-lock">
+        <div class="overlay-backdrop" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="mainSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">FLOWX INFINITE</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="/myinfo" class="sidebar-item"><i class="fas fa-wrench"></i> My Workshop</a>
+                <a href="/dashboard" class="sidebar-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="/execution" class="sidebar-item"><i class="fas fa-bolt"></i> Attack Menu</a>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <header>
+                <a href="/dashboard" class="icon-btn"><i class="fas fa-arrow-left"></i></a>
+                <div class="header-title">QR GENERATOR</div>
+                <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            </header>
+
+            <div class="main-content">
+                
+                <div class="card anim-element delay-1">
+                    <div class="logo-container">
+                        <div class="logo-wrapper">
+                            <img class="logo-img" src="https://files.catbox.moe/ybnmww.jpg" alt="FlowX Logo">
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">QR Code Generator</h2>
+
+                    <div class="input-group">
+                        <div class="input-label">
+                            <i class="fas fa-link"></i> Input URL or Text
+                        </div>
+                        <div class="input-wrapper">
+                            <i class="fas fa-pen input-icon"></i>
+                            <input type="text" class="input-box" id="text" placeholder="https://example.com or any text..." autocomplete="off">
+                        </div>
+                    </div>
+                    
+                    <button class="generate-btn" onclick="generateQR()">
+                        <i class="fas fa-wand-magic-sparkles"></i> GENERATE QR CODE
+                    </button>
+                    
+                    <div class="qrcode-container" id="qrcodeContainer">
+                        <div id="qrcode"></div>
+                        <button class="download-btn" id="downloadBtn" onclick="downloadQR()">
+                            <i class="fas fa-download"></i> SAVE TO GALLERY
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card anim-element delay-2">
+                    <div class="info-box">
+                        <h4><i class="fas fa-circle-info"></i> System Guide</h4>
+                        <p>QR Generator FlowX Infinite menggunakan Enkripsi visual standar. Masukkan URL atau teks yang valid untuk menghasilkan kode QR.</p>
+                        <p style="margin-top: 10px; color: #ccc; font-size: 0.8rem;"><i class="fas fa-lightbulb"></i> <strong>Tip:</strong> Gunakan <code>https://</code> agar link langsung terbuka di browser.</p>
+                    </div>
+                </div>
+
+                <div class="footer anim-element delay-3">
+                    SYSTEM DESIGNED BY LOLIPOP © 2025
+                </div>
+
+            </div>
+
+            <nav class="navbar">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-qrcode"></i>
+                </a>
+                <a href="/execution" class="nav-item">
+                    <i class="fas fa-bolt"></i>
+                </a>
+                <a href="/myinfo" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                </a>
+            </nav>
+
+            <div class="toast" id="toast">
+                <i class="fas fa-info-circle"></i>
+                <span id="toast-msg">Notification</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let qrInstance = null;
+
+        function toggleSidebar() {
+            document.getElementById('mainSidebar').classList.toggle('active');
+            document.querySelector('.overlay-backdrop').classList.toggle('active');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('i');
+            const msgSpan = document.getElementById('toast-msg');
+            
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+                toast.style.borderColor = '#00ff88';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-times-circle';
+                toast.style.borderColor = '#ff4444';
+            } else {
+                icon.className = 'fas fa-info-circle';
+                toast.style.borderColor = 'var(--accent-orange)';
+            }
+            
+            msgSpan.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function generateQR() {
+            const text = document.getElementById("text").value.trim();
+            const qrContainer = document.getElementById("qrcode");
+            const qrCodeContainer = document.getElementById("qrcodeContainer");
+            const downloadBtn = document.getElementById("downloadBtn");
+            const inputWrapper = document.querySelector('.input-wrapper');
+
+            qrContainer.innerHTML = "";
+            qrCodeContainer.style.display = "none";
+            downloadBtn.style.display = "none";
+
+            if (!text) {
+                showToast("Please enter text or URL!", 'error');
+                inputWrapper.style.transform = "translateX(5px)";
+                setTimeout(() => inputWrapper.style.transform = "translateX(-5px)", 100);
+                setTimeout(() => inputWrapper.style.transform = "translateX(0)", 200);
+                return;
+            }
+
+            if (qrInstance) {
+                qrInstance.clear();
+            }
+
+            qrInstance = new QRCode(qrContainer, {
+                text: text,
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                qrCodeContainer.style.display = "block";
+                downloadBtn.style.display = "flex";
+                showToast("QR Code generated successfully!", 'success');
+            }, 300);
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector("#qrcode canvas");
+            if (!canvas) {
+                showToast("Generate QR code first!", 'error');
+                return;
+            }
+
+            const downloadBtn = document.getElementById("downloadBtn");
+            downloadBtn.style.transform = "scale(0.95)";
+            setTimeout(() => downloadBtn.style.transform = "scale(1)", 150);
+
+            const padding = 30;
+            const newCanvas = document.createElement("canvas");
+            const ctx = newCanvas.getContext("2d");
+            
+            newCanvas.width = canvas.width + (padding * 2);
+            newCanvas.height = canvas.height + (padding * 2) + 40;
+            
+            const grd = ctx.createLinearGradient(0, 0, newCanvas.width, newCanvas.height);
+            grd.addColorStop(0, "#1a1a1a");
+            grd.addColorStop(1, "#0a0a0a");
+            
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+            
+            ctx.drawImage(canvas, padding, padding);
+            
+            ctx.font = "bold 14px 'Orbitron', sans-serif";
+            ctx.fillStyle = "var(--accent-orange)";
+            ctx.textAlign = "center";
+            ctx.fillText("FLOWX GENERATOR", newCanvas.width/2, newCanvas.height - 15);
+            
+            const link = document.createElement("a");
+            link.href = newCanvas.toDataURL("image/png");
+            link.download = "FlowX_QR_Code.png";
+            link.click();
+            
+            showToast("QR Code downloaded!", 'success');
+        }
+
+        document.getElementById("text").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") generateQR();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("text").focus();
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
