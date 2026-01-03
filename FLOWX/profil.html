@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Info - FlowX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-red: #ff3333;
+            --secondary-red: #cc0000;
+            --accent-orange: #ff6600;
+            --accent-yellow: #ffcc00;
+            --glass-bg: rgba(30, 30, 30, 0.9);
+            --border-color: rgba(255, 100, 100, 0.2);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Rajdhani', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
+        
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body { 
+            background-color: #0a0a0a; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: radial-gradient(circle at 50% 20%, #331111 0%, #000 60%); 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        
+        .container-lock {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        .app-container { 
+            width: 100%;
+            height: 100vh;
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            color: white; 
+            background: rgba(10, 10, 10, 0.95); 
+            overflow: hidden; 
+            border: 1px solid rgba(255, 50, 50, 0.1);
+        }
+
+        @media (min-width: 769px) {
+            .app-container {
+                max-width: 414px;
+                height: 90vh;
+                border-radius: 15px;
+            }
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        
+        .anim-element { 
+            opacity: 0; 
+            animation: fadeIn 0.5s ease forwards; 
+        }
+        
+        .delay-1 { animation-delay: 0.1s; } 
+        .delay-2 { animation-delay: 0.2s; } 
+        .delay-3 { animation-delay: 0.3s; } 
+        .delay-4 { animation-delay: 0.4s; }
+
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px;
+            background: rgba(20, 20, 20, 0.9);
+            border-bottom: 1px solid rgba(255, 100, 100, 0.1);
+        }
+        
+        .header-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            color: #fff;
+            background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .icon-btn { 
+            background: rgba(255, 50, 50, 0.1);
+            width: 40px; 
+            height: 40px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            color: #ddd; 
+            font-size: 1.1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            text-decoration: none; 
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 50, 50, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .info-hero {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px;
+        }
+
+        .info-hero img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 100, 100, 0.3);
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 50, 50, 0.3);
+            margin-bottom: 15px;
+            animation: pulseBorder 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseBorder {
+            0% {
+                border-color: rgba(255, 50, 50, 0.3);
+                box-shadow: 0 0 0 0 rgba(255, 50, 50, 0.4);
+            }
+            70% {
+                border-color: var(--primary-red);
+                box-shadow: 0 0 0 15px rgba(255, 50, 50, 0);
+            }
+            100% {
+                border-color: rgba(255, 50, 50, 0.3);
+                box-shadow: 0 0 0 0 rgba(255, 50, 50, 0);
+            }
+        }
+
+        .hero-text h1 {
+            font-family: 'Orbitron';
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        
+        .hero-text p {
+            font-family: 'Courier Prime';
+            font-size: 0.85rem;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+
+        .features-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card { 
+            background: rgba(25, 25, 25, 0.8); 
+            border-radius: 15px; 
+            padding: 20px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            margin-bottom: 20px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .feature-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 50, 50, 0.05);
+            border-color: var(--accent-orange);
+            transform: translateY(-2px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            left: 0; 
+            top: 0; 
+            width: 3px; 
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-red), var(--accent-orange));
+            opacity: 0.7;
+        }
+
+        .f-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover .f-icon {
+            transform: scale(1.1);
+            background: rgba(255, 100, 100, 0.2);
+        }
+
+        .f-content h3 {
+            font-family: 'Orbitron';
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .f-content p {
+            font-size: 0.8rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .icon-red { 
+            color: var(--primary-red); 
+        }
+        
+        .icon-orange { 
+            color: var(--accent-orange); 
+        }
+        
+        .icon-yellow { 
+            color: var(--accent-yellow); 
+        }
+        
+        .icon-white { 
+            color: #fff; 
+        }
+
+        .cta-box {
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .cta-btn:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 5px 20px rgba(255, 50, 50, 0.5);
+        }
+
+        .navbar { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: rgba(20, 20, 20, 0.95); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 100, 100, 0.2); 
+            z-index: 1000; 
+        }
+        
+        .nav-item { 
+            font-size: 1.3rem; 
+            color: #666; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            position: relative; 
+            width: 45px; 
+            height: 35px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+        }
+        
+        .nav-item.active { 
+            color: var(--primary-red); 
+            transform: translateY(-3px);
+        }
+        
+        .nav-item.active::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -2px;
+            width: 5px; 
+            height: 5px; 
+            background: var(--primary-red);
+            border-radius: 50%; 
+            box-shadow: 0 0 10px var(--primary-red);
+        }
+
+        .nav-item:hover { 
+            color: var(--accent-orange); 
+        }
+
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: -100%; 
+            width: 85%;
+            max-width: 280px;
+            height: 100%; 
+            background: linear-gradient(180deg, #111 0%, #1a1a1a 100%); 
+            z-index: 999; 
+            transition: left 0.3s ease; 
+            border-right: 1px solid rgba(255, 50, 50, 0.2); 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+        }
+        
+        .sidebar.active { 
+            left: 0; 
+        }
+        
+        .sidebar-header { 
+            height: 160px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 50, 50, 0.3);
+        }
+        
+        .sidebar-title { 
+            color: white; 
+            font-family: 'Orbitron'; 
+            font-weight: 700; 
+            font-size: 1.3rem; 
+            text-shadow: 0 0 10px rgba(255, 50, 50, 0.5);
+        }
+        
+        .sidebar-menu { 
+            padding: 15px 0; 
+        }
+        
+        .sidebar-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 14px 20px; 
+            color: #ddd; 
+            font-family: 'Rajdhani', sans-serif;
+            text-decoration: none; 
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-item:hover { 
+            background: rgba(255, 50, 50, 0.1); 
+            border-left-color: var(--primary-red);
+            padding-left: 22px; 
+        }
+        
+        .sidebar-item i { 
+            width: 20px; 
+            margin-right: 12px; 
+            text-align: center; 
+            color: var(--accent-orange);
+        }
+        
+        .overlay-backdrop { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 998; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: 0.2s; 
+        }
+        
+        .overlay-backdrop.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+
+        .system-info {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.7rem;
+            font-family: 'Courier Prime';
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 100, 100, 0.1);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 5px;
+            font-size: 0.7rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            box-shadow: 0 0 8px #00ff00;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-lock">
+        <div class="overlay-backdrop" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="mainSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">FLOWX INFINITE</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="/myinfo" class="sidebar-item"><i class="fas fa-wrench"></i> My Workshop</a>
+                <a href="/dashboard" class="sidebar-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="/execution" class="sidebar-item"><i class="fas fa-bolt"></i> Attack Menu</a>
+                <a href="/logout" class="sidebar-item">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+            <div style="padding: 15px 20px; color: #555; font-size: 0.7rem; font-family: 'Courier Prime'; margin-top: auto; border-top: 1px solid rgba(255, 100, 100, 0.1);">
+                CONNECTED: <span style="color: #00ff00;">SECURE</span><br>
+                PING: 24ms
+            </div>
+        </div>
+
+        <div class="app-container">
+            <header>
+                <a href="/dashboard" class="icon-btn"><i class="fas fa-arrow-left"></i></a>
+                <div class="header-title">SYSTEM INFO</div>
+                <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            </header>
+
+            <div class="main-content">
+                
+                <div class="info-hero anim-element delay-1">
+                    <img src="https://i.top4top.io/p_3590b6bk90.jpg" alt="Logo">
+                    <div class="hero-text">
+                        <h1>FLOWX INFINITE</h1>
+                        <p>ADVANCED WEB PENETRATION TOOLKIT</p>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    
+                    <div class="feature-card anim-element delay-2">
+                        <div class="f-icon icon-red">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>Web Sender</h3>
+                            <p>Broadcast pesan massal secara efisien dengan API gateway Terintegrasi langsung di dashboard.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card anim-element delay-3">
+                        <div class="f-icon icon-orange">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>Bug Scanner</h3>
+                            <p>Alat penetration testing ringan untuk mendeteksi celah keamanan dasar secara realtime.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card anim-element delay-4">
+                        <div class="f-icon icon-yellow">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>Modern UI/UX</h3>
+                            <p>Antarmuka Glassmorphism Cyberpunk yang responsif, adaptif, dan nyaman untuk penggunaan jangka panjang.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card anim-element delay-4">
+                        <div class="f-icon icon-white">
+                            <i class="fas fa-gauge-high"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>High Performance</h3>
+                            <p>Core system yang dioptimalkan untuk kecepatan eksekusi tinggi dan penggunaan resource rendah.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="cta-box anim-element delay-4">
+                    <h3 style="font-family: 'Orbitron'; margin-bottom: 5px; color: var(--accent-orange);">Akses Penuh</h3>
+                    <p style="color: #ccc; font-size: 0.85rem; margin-bottom: 5px;">Buka potensi penuh dari Indictive Core sekarang.</p>
+                    <a href="/dashboard" class="cta-btn">BUKA DASHBOARD</a>
+                </div>
+
+                <div class="system-info">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span style="color: #00ff00;">SYSTEM ONLINE</span>
+                    </div>
+                    SYSTEM ID: #DC-2025-V4 // BUILD: STABLE<br>
+                    DEVELOPED BY LOLIPOP
+                </div>
+
+            </div>
+
+            <nav class="navbar">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/execution" class="nav-item">
+                    <i class="fas fa-bolt"></i>
+                </a>
+                <a href="/myinfo" class="nav-item active">
+                    <i class="fas fa-circle-info"></i>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('mainSidebar').classList.toggle('active');
+            document.querySelector('.overlay-backdrop').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
