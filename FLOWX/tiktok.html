@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TikTok Downloader - FlowX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-red: #ff3333;
+            --secondary-red: #cc0000;
+            --accent-orange: #ff6600;
+            --accent-yellow: #ffcc00;
+            --glass-bg: rgba(30, 30, 30, 0.9);
+            --border-color: rgba(255, 100, 100, 0.2);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Rajdhani', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
+        
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body { 
+            background-color: #0a0a0a; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: radial-gradient(circle at 50% 20%, #331111 0%, #000 60%); 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        
+        .container-lock {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        .app-container { 
+            width: 100%;
+            height: 100vh;
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            color: white; 
+            background: rgba(10, 10, 10, 0.95); 
+            overflow: hidden; 
+            border: 1px solid rgba(255, 50, 50, 0.1);
+        }
+
+        @media (min-width: 769px) {
+            .app-container {
+                max-width: 414px;
+                height: 90vh;
+                border-radius: 15px;
+            }
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        
+        .anim-element { 
+            opacity: 0; 
+            animation: fadeIn 0.5s ease forwards; 
+        }
+        
+        .delay-1 { animation-delay: 0.1s; } 
+        .delay-2 { animation-delay: 0.2s; } 
+        .delay-3 { animation-delay: 0.3s; }
+
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px;
+            background: rgba(20, 20, 20, 0.9);
+            border-bottom: 1px solid rgba(255, 100, 100, 0.1);
+        }
+        
+        .header-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            color: #fff;
+            background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .icon-btn { 
+            background: rgba(255, 50, 50, 0.1);
+            width: 40px; 
+            height: 40px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            color: #ddd; 
+            font-size: 1.1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            text-decoration: none; 
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 50, 50, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .card { 
+            background: rgba(25, 25, 25, 0.8); 
+            border-radius: 15px; 
+            padding: 20px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            margin-bottom: 20px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            border-radius: 10px;
+            padding: 14px 15px 14px 45px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-box:focus {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .input-icon {
+            position: absolute; 
+            left: 15px; 
+            top: 50%;
+            transform: translateY(-50%); 
+            color: var(--accent-orange);
+            font-size: 1.1rem;
+        }
+
+        .action-btn {
+            width: 100%; 
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+            border: none; 
+            border-radius: 12px;
+            color: white; 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 700;
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+        }
+        
+        .action-btn:active { 
+            transform: scale(0.98); 
+        }
+        
+        .action-btn:disabled { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+        }
+
+        .progress-wrapper { 
+            margin-top: 20px; 
+            display: none; 
+        }
+        
+        .progress-track {
+            width: 100%; 
+            height: 4px; 
+            background: rgba(255, 100, 100, 0.1);
+            border-radius: 10px; 
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%; 
+            width: 0%; 
+            background: var(--accent-orange);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px var(--accent-orange);
+        }
+        
+        .progress-text {
+            text-align: center; 
+            font-size: 0.8rem; 
+            color: #aaa;
+            margin-top: 8px; 
+            font-family: 'Courier Prime', monospace;
+        }
+
+        .result-section { 
+            display: none; 
+        }
+
+        .video-wrapper {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            position: relative;
+            padding-top: 177.78%; /* 16:9 aspect ratio */
+        }
+
+        .video-player {
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .meta-info { 
+            text-align: center; 
+            margin-bottom: 15px; 
+        }
+        
+        .meta-title { 
+            color: #fff; 
+            font-weight: 700; 
+            font-size: 0.95rem; 
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .meta-author { 
+            color: var(--accent-orange); 
+            font-size: 0.85rem; 
+            font-family: 'Courier Prime', monospace; 
+        }
+
+        .stats-grid {
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr;
+            background: rgba(0,0,0,0.3);
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 100, 100, 0.2);
+        }
+        
+        .stat-item {
+            text-align: center; 
+            color: #ccc; 
+            font-size: 0.85rem;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 5px;
+        }
+        
+        .stat-item i { 
+            color: var(--accent-orange); 
+            font-size: 1.1rem; 
+        }
+
+        .dl-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+        
+        .dl-btn {
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            padding: 14px; 
+            border-radius: 12px;
+            color: #fff; 
+            text-decoration: none;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .dl-btn:active { 
+            background: rgba(255, 50, 50, 0.2); 
+            transform: scale(0.98); 
+        }
+        
+        .dl-btn i { 
+            font-size: 1.2rem; 
+            margin-bottom: 5px; 
+            color: var(--accent-orange); 
+        }
+        
+        .dl-btn span { 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+        }
+        
+        .dl-btn small { 
+            font-size: 0.7rem; 
+            color: #888; 
+            margin-top: 3px;
+        }
+
+        .log { 
+            background: rgba(20, 20, 20, 0.8); 
+            border: 1px solid rgba(255, 100, 100, 0.2); 
+            border-radius: 12px; 
+            padding: 15px; 
+            font-family: 'Courier Prime', monospace; 
+            font-size: 0.8rem; 
+            height: 120px; 
+            overflow-y: auto; 
+            color: #ccc; 
+            margin-top: 20px; 
+        }
+        
+        .log-line { 
+            margin-bottom: 5px; 
+            padding-bottom: 2px; 
+        }
+
+        .navbar { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: rgba(20, 20, 20, 0.95); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 100, 100, 0.2); 
+            z-index: 1000; 
+        }
+        
+        .nav-item { 
+            font-size: 1.3rem; 
+            color: #666; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            position: relative; 
+            width: 45px; 
+            height: 35px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+        }
+        
+        .nav-item.active { 
+            color: var(--primary-red); 
+            transform: translateY(-3px);
+        }
+        
+        .nav-item.active::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -2px;
+            width: 5px; 
+            height: 5px; 
+            background: var(--primary-red);
+            border-radius: 50%; 
+            box-shadow: 0 0 10px var(--primary-red);
+        }
+
+        .nav-item:hover { 
+            color: var(--accent-orange); 
+        }
+
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: -100%; 
+            width: 85%;
+            max-width: 280px;
+            height: 100%; 
+            background: linear-gradient(180deg, #111 0%, #1a1a1a 100%); 
+            z-index: 999; 
+            transition: left 0.3s ease; 
+            border-right: 1px solid rgba(255, 50, 50, 0.2); 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+        }
+        
+        .sidebar.active { 
+            left: 0; 
+        }
+        
+        .sidebar-header { 
+            height: 160px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 50, 50, 0.3);
+        }
+        
+        .sidebar-title { 
+            color: white; 
+            font-family: 'Orbitron'; 
+            font-weight: 700; 
+            font-size: 1.3rem; 
+            text-shadow: 0 0 10px rgba(255, 50, 50, 0.5);
+        }
+        
+        .sidebar-menu { 
+            padding: 15px 0; 
+        }
+        
+        .sidebar-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 14px 20px; 
+            color: #ddd; 
+            font-family: 'Rajdhani', sans-serif;
+            text-decoration: none; 
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-item:hover { 
+            background: rgba(255, 50, 50, 0.1); 
+            border-left-color: var(--primary-red);
+            padding-left: 22px; 
+        }
+        
+        .sidebar-item i { 
+            width: 20px; 
+            margin-right: 12px; 
+            text-align: center; 
+            color: var(--accent-orange);
+        }
+        
+        .overlay-backdrop { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 998; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: 0.2s; 
+        }
+        
+        .overlay-backdrop.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+
+        .toast { 
+            position: fixed; 
+            bottom: 100px; 
+            left: 50%; 
+            transform: translateX(-50%) translateY(20px); 
+            background: rgba(30, 30, 40, 0.95); 
+            border: 1px solid var(--accent-orange); 
+            padding: 12px 20px; 
+            border-radius: 50px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            color: #fff; 
+            font-weight: 600; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: 0.3s; 
+            z-index: 2000; 
+            box-shadow: 0 5px 15px rgba(255, 100, 100, 0.3); 
+        }
+        
+        .toast.show { 
+            opacity: 1; 
+            transform: translateX(-50%) translateY(0); 
+        }
+
+        .log-error { color: #ff4444; }
+        .log-success { color: #00ff88; }
+        .log-info { color: #888; }
+        
+        .log-warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+
+    <div class="container-lock">
+        <div class="overlay-backdrop" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="mainSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">FLOWX INFINITE</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="/myinfo" class="sidebar-item"><i class="fas fa-wrench"></i> My Workshop</a>
+                <a href="/dashboard" class="sidebar-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="/execution" class="sidebar-item"><i class="fas fa-bolt"></i> Attack Menu</a>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <header>
+                <a href="/dashboard" class="icon-btn"><i class="fas fa-arrow-left"></i></a>
+                <div class="header-title">TIKTOK DL</div>
+                <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            </header>
+
+            <div class="main-content">
+                
+                <div class="card anim-element delay-1">
+                    <div class="input-group">
+                        <i class="fas fa-link input-icon"></i>
+                        <input type="text" class="input-box" id="tiktok-url" placeholder="Paste TikTok Link...">
+                    </div>
+                    
+                    <button class="action-btn" onclick="downloadTikTok()" id="downloadBtn">
+                        <i class="fas fa-bolt"></i> GET VIDEO
+                    </button>
+
+                    <div class="progress-wrapper" id="progress-container">
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="progress-text">Connecting...</div>
+                    </div>
+                </div>
+
+                <div class="card result-section anim-element delay-2" id="result-section">
+                    <div class="meta-info">
+                        <div class="meta-title" id="video-title">Title Loading...</div>
+                        <div class="meta-author" id="video-author">@username</div>
+                    </div>
+
+                    <div class="video-wrapper">
+                        <video class="video-player" id="video-preview" controls loop playsinline></video>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item"><i class="fas fa-heart"></i> <span id="like-count">0</span></div>
+                        <div class="stat-item"><i class="fas fa-comment"></i> <span id="comment-count">0</span></div>
+                        <div class="stat-item"><i class="fas fa-share"></i> <span id="share-count">0</span></div>
+                    </div>
+
+                    <div class="dl-grid">
+                        <a href="#" class="dl-btn" id="dl-video">
+                            <i class="fas fa-video"></i>
+                            <span>No Watermark</span>
+                            <small>MP4 HD</small>
+                        </a>
+                        <a href="#" class="dl-btn" id="dl-audio">
+                            <i class="fas fa-music"></i>
+                            <span>Audio Only</span>
+                            <small>MP3 Format</small>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="log anim-element delay-3" id="log">
+                    <div class="log-line">> System Initialized...</div>
+                    <div class="log-line log-info">> Ready for TikTok download.</div>
+                </div>
+
+            </div>
+
+            <nav class="navbar">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="/execution" class="nav-item">
+                    <i class="fas fa-bolt"></i>
+                </a>
+                <a href="/myinfo" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                </a>
+            </nav>
+
+            <div class="toast" id="toast">
+                <i class="fas fa-info-circle"></i>
+                <span id="toast-msg">Notification</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentVideoData = null;
+
+        function toggleSidebar() {
+            document.getElementById('mainSidebar').classList.toggle('active');
+            document.querySelector('.overlay-backdrop').classList.toggle('active');
+        }
+
+        const utils = {
+            log: (msg, type = '') => {
+                const log = document.getElementById('log');
+                const line = document.createElement('div');
+                line.className = `log-line ${type === 'error' ? 'log-error' : type === 'success' ? 'log-success' : type === 'warning' ? 'log-warning' : type === 'info' ? 'log-info' : ''}`;
+                line.innerText = `> ${msg}`;
+                log.appendChild(line);
+                log.scrollTop = log.scrollHeight;
+            },
+            toast: (msg, type = 'info') => {
+                const t = document.getElementById('toast');
+                const icon = t.querySelector('i');
+                
+                if (type === 'error') {
+                    icon.className = 'fas fa-times-circle';
+                    t.style.borderColor = '#ff4444';
+                } else if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                    t.style.borderColor = '#00ff88';
+                } else if (type === 'warning') {
+                    icon.className = 'fas fa-exclamation-triangle';
+                    t.style.borderColor = '#ffaa00';
+                } else {
+                    icon.className = 'fas fa-info-circle';
+                    t.style.borderColor = 'var(--accent-orange)';
+                }
+                
+                document.getElementById('toast-msg').innerText = msg;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 3000);
+            },
+            loading: (state) => {
+                const btn = document.getElementById('downloadBtn');
+                const prog = document.getElementById('progress-container');
+                if(state) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+                    prog.style.display = 'block';
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-bolt"></i> GET VIDEO';
+                    prog.style.display = 'none';
+                }
+            },
+            progress: (pct, text) => {
+                document.getElementById('progress-fill').style.width = pct + '%';
+                document.getElementById('progress-text').innerText = text;
+            }
+        };
+
+        const API_ENDPOINTS = [
+            {
+                url: (url) => `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
+                method: "GET",
+                parse: (data) => {
+                    if (data.data) {
+                        return {
+                            success: true,
+                            video: data.data.play || data.data.wmplay,
+                            music: data.data.music,
+                            title: data.data.title,
+                            author: data.data.author?.nickname || "User",
+                            stats: {
+                                like: data.data.digg_count || 0,
+                                comment: data.data.comment_count || 0,
+                                share: data.data.share_count || 0
+                            }
+                        };
+                    }
+                    throw new Error("Invalid response");
+                }
+            },
+            {
+                url: (url) => `https://www.tikdown.org/api/ajaxSearch?url=${encodeURIComponent(url)}&_=${Date.now()}`,
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+                parse: (data) => {
+                    if (data.data && data.links) {
+                        return {
+                            success: true,
+                            video: data.links[0]?.a || data.links[0]?.url,
+                            music: data.music,
+                            title: data.title,
+                            author: data.author,
+                            stats: {
+                                like: data.like_count || 0,
+                                comment: data.comment_count || 0,
+                                share: data.share_count || 0
+                            }
+                        };
+                    }
+                    throw new Error("Invalid response");
+                }
+            }
+        ];
+
+        async function fetchTikTokData(url) {
+            for (const endpoint of API_ENDPOINTS) {
+                try {
+                    utils.log(`Connecting to server ${API_ENDPOINTS.indexOf(endpoint) + 1}...`, 'info');
+                    utils.progress(20 + (API_ENDPOINTS.indexOf(endpoint) * 20), "Checking server...");
+                    
+                    const options = { method: endpoint.method };
+                    if (endpoint.headers) options.headers = endpoint.headers;
+                    if (endpoint.method === "POST") options.body = new URLSearchParams({ url: url });
+
+                    const res = await fetch(endpoint.url(url), options);
+                    const data = await res.json();
+                    
+                    const result = endpoint.parse(data);
+                    if (result.success) {
+                        utils.log(`Server ${API_ENDPOINTS.indexOf(endpoint) + 1} success!`, 'success');
+                        return result;
+                    }
+
+                } catch (e) {
+                    utils.log(`API ${API_ENDPOINTS.indexOf(endpoint) + 1} error: ${e.message}`, 'error');
+                }
+            }
+            throw new Error("All servers busy. Try again.");
+        }
+
+        async function downloadTikTok() {
+            const url = document.getElementById('tiktok-url').value.trim();
+            if (!url) {
+                utils.toast("Please paste a TikTok link!", 'warning');
+                return;
+            }
+
+            if (!url.includes('tiktok.com') && !url.includes('douyin.com')) {
+                utils.toast("Please enter a valid TikTok URL!", 'error');
+                return;
+            }
+
+            utils.loading(true);
+            document.getElementById('result-section').style.display = 'none';
+            utils.progress(10, "Initializing...");
+
+            try {
+                const data = await fetchTikTokData(url);
+                utils.progress(80, "Data retrieved...");
+
+                currentVideoData = data;
+
+                document.getElementById('video-title').innerText = data.title || "No Title";
+                document.getElementById('video-author').innerText = "@" + data.author;
+                document.getElementById('like-count').innerText = formatNumber(data.stats.like);
+                document.getElementById('comment-count').innerText = formatNumber(data.stats.comment);
+                document.getElementById('share-count').innerText = formatNumber(data.stats.share);
+
+                const vid = document.getElementById('video-preview');
+                vid.src = data.video;
+                vid.load();
+
+                setupBtn('dl-video', data.video, `tiktok_${Date.now()}.mp4`);
+                setupBtn('dl-audio', data.music, `audio_${Date.now()}.mp3`);
+                
+                const audioBtn = document.getElementById('dl-audio');
+                if(!data.music) {
+                    audioBtn.style.display = 'none';
+                } else {
+                    audioBtn.style.display = 'flex';
+                }
+
+                utils.progress(100, "Complete!");
+                
+                const resSec = document.getElementById('result-section');
+                resSec.style.display = 'block';
+                resSec.style.opacity = '0';
+                resSec.style.animation = 'none';
+                setTimeout(() => {
+                    resSec.style.animation = 'fadeIn 0.5s ease forwards';
+                }, 10);
+                
+                if(window.innerWidth < 768) {
+                    setTimeout(() => resSec.scrollIntoView({ behavior: 'smooth' }), 100);
+                }
+                
+                utils.log("Video found and ready!", "success");
+                utils.toast("Video successfully retrieved!", 'success');
+
+            } catch (e) {
+                utils.toast("Failed to download video", 'error');
+                utils.log(`Download error: ${e.message}`, 'error');
+            } finally {
+                utils.loading(false);
+            }
+        }
+
+        function setupBtn(id, url, filename) {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    if (!url) {
+                        utils.toast("No download link available", 'error');
+                        return;
+                    }
+                    
+                    utils.toast("Starting download...", 'info');
+                    const a = document.createElement('a');
+                    a.href = url; 
+                    a.download = filename; 
+                    a.target = '_blank';
+                    a.style.display = 'none';
+                    document.body.appendChild(a); 
+                    a.click(); 
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                    }, 100);
+                };
+            }
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num/1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num/1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            utils.log("TikTok Downloader ready", 'success');
+        });
+    </script>
+</body>
+</html>
