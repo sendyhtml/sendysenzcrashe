@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Music Search - FlowX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-red: #ff3333;
+            --secondary-red: #cc0000;
+            --accent-orange: #ff6600;
+            --accent-yellow: #ffcc00;
+            --glass-bg: rgba(30, 30, 30, 0.9);
+            --border-color: rgba(255, 100, 100, 0.2);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Rajdhani', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
+        
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body { 
+            background-color: #0a0a0a; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: radial-gradient(circle at 50% 20%, #331111 0%, #000 60%); 
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        
+        .container-lock {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        .app-container { 
+            width: 100%;
+            height: 100vh;
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            color: white; 
+            background: rgba(10, 10, 10, 0.95); 
+            overflow: hidden; 
+            border: 1px solid rgba(255, 50, 50, 0.1);
+        }
+
+        @media (min-width: 769px) {
+            .app-container {
+                max-width: 414px;
+                height: 90vh;
+                border-radius: 15px;
+            }
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        
+        .anim-element { 
+            opacity: 0; 
+            animation: fadeIn 0.5s ease forwards; 
+        }
+        
+        .delay-1 { animation-delay: 0.1s; } 
+        .delay-2 { animation-delay: 0.2s; } 
+        .delay-3 { animation-delay: 0.3s; }
+
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px;
+            background: rgba(20, 20, 20, 0.9);
+            border-bottom: 1px solid rgba(255, 100, 100, 0.1);
+        }
+        
+        .header-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            color: #fff;
+            background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .icon-btn { 
+            background: rgba(255, 50, 50, 0.1);
+            width: 40px; 
+            height: 40px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            color: #ddd; 
+            font-size: 1.1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            text-decoration: none; 
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 50, 50, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .card { 
+            background: rgba(25, 25, 25, 0.8); 
+            border-radius: 15px; 
+            padding: 20px; 
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            margin-bottom: 20px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            border-radius: 10px;
+            padding: 14px 15px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+            border: none;
+            border-radius: 10px;
+            width: 50px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+        }
+
+        .search-btn:active {
+            transform: scale(0.95);
+        }
+
+        .song-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .song-item:hover {
+            background: rgba(255, 50, 50, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .song-item.active {
+            border-color: var(--accent-orange);
+            background: rgba(255, 102, 0, 0.1);
+        }
+
+        .song-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .song-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .song-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .song-artist {
+            font-size: 0.75rem;
+            color: #aaa;
+            font-family: 'Courier Prime', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 100, 100, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-orange);
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .song-item.active .song-action {
+            background: rgba(255, 102, 0, 0.2);
+            color: #fff;
+        }
+
+        .now-playing {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150px);
+            width: 90%;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .now-playing.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .np-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid var(--accent-orange);
+            animation: spin 10s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .np-img.playing {
+            animation-play-state: running;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .np-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .np-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+
+        .np-artist {
+            font-size: 0.75rem;
+            color: var(--accent-orange);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .np-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .np-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .np-btn-main {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+            box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+        }
+
+        .np-dl {
+            color: #aaa;
+            font-size: 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .np-dl:hover {
+            color: #fff;
+        }
+
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: -100%; 
+            width: 85%;
+            max-width: 280px;
+            height: 100%; 
+            background: linear-gradient(180deg, #111 0%, #1a1a1a 100%); 
+            z-index: 999; 
+            transition: left 0.3s ease; 
+            border-right: 1px solid rgba(255, 50, 50, 0.2); 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+        }
+        
+        .sidebar.active { 
+            left: 0; 
+        }
+        
+        .sidebar-header { 
+            height: 160px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 50, 50, 0.3);
+        }
+        
+        .sidebar-title { 
+            color: white; 
+            font-family: 'Orbitron'; 
+            font-weight: 700; 
+            font-size: 1.3rem; 
+            text-shadow: 0 0 10px rgba(255, 50, 50, 0.5);
+        }
+        
+        .sidebar-menu { 
+            padding: 15px 0; 
+        }
+        
+        .sidebar-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 14px 20px; 
+            color: #ddd; 
+            font-family: 'Rajdhani', sans-serif;
+            text-decoration: none; 
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-item:hover { 
+            background: rgba(255, 50, 50, 0.1); 
+            border-left-color: var(--primary-red);
+            padding-left: 22px; 
+        }
+        
+        .sidebar-item i { 
+            width: 20px; 
+            margin-right: 12px; 
+            text-align: center; 
+            color: var(--accent-orange);
+        }
+        
+        .overlay-backdrop { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 998; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: 0.2s; 
+        }
+        
+        .overlay-backdrop.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+
+        .toast { 
+            position: fixed; 
+            bottom: 100px; 
+            left: 50%; 
+            transform: translateX(-50%) translateY(20px); 
+            background: rgba(30, 30, 40, 0.95); 
+            border: 1px solid var(--accent-orange); 
+            padding: 12px 20px; 
+            border-radius: 50px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            color: #fff; 
+            font-weight: 600; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: 0.3s; 
+            z-index: 2000; 
+            box-shadow: 0 5px 15px rgba(255, 100, 100, 0.3); 
+        }
+        
+        .toast.show { 
+            opacity: 1; 
+            transform: translateX(-50%) translateY(0); 
+        }
+
+        .status-msg { 
+            text-align: center; 
+            padding: 30px; 
+            color: #777; 
+            font-family: 'Courier Prime'; 
+            font-size: 0.9rem; 
+        }
+        
+        .loading-spinner { 
+            font-size: 1.8rem; 
+            color: var(--accent-orange); 
+            animation: spin 1s infinite linear; 
+            margin-bottom: 15px; 
+        }
+
+        .navbar { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: rgba(20, 20, 20, 0.95); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 100, 100, 0.2); 
+            z-index: 1000; 
+        }
+        
+        .nav-item { 
+            font-size: 1.3rem; 
+            color: #666; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            position: relative; 
+            width: 45px; 
+            height: 35px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+        }
+        
+        .nav-item.active { 
+            color: var(--primary-red); 
+            transform: translateY(-3px);
+        }
+        
+        .nav-item.active::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -2px;
+            width: 5px; 
+            height: 5px; 
+            background: var(--primary-red);
+            border-radius: 50%; 
+            box-shadow: 0 0 10px var(--primary-red);
+        }
+
+        .nav-item:hover { 
+            color: var(--accent-orange); 
+        }
+
+        .error { color: #ff4444; }
+        .success { color: #00ff88; }
+        .warning { color: #ffaa00; }
+        .info { color: #00aaff; }
+    </style>
+</head>
+<body>
+
+    <div class="container-lock">
+        <div class="overlay-backdrop" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="mainSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">FLOWX INFINITE</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="/myinfo" class="sidebar-item"><i class="fas fa-wrench"></i> My Workshop</a>
+                <a href="/dashboard" class="sidebar-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="/execution" class="sidebar-item"><i class="fas fa-bolt"></i> Attack Menu</a>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <header>
+                <a href="/dashboard" class="icon-btn"><i class="fas fa-arrow-left"></i></a>
+                <div class="header-title">MUSIC SEARCH</div>
+                <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            </header>
+
+            <div class="main-content">
+                
+                <div class="card anim-element delay-1">
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="search-input" placeholder="Search song or artist...">
+                        <button class="search-btn" onclick="searchMusic()"><i class="fas fa-search"></i></button>
+                    </div>
+
+                    <div id="loading" class="status-msg" style="display: none;">
+                        <i class="fas fa-circle-notch loading-spinner"></i>
+                        <p style="margin-top: 10px;">Scanning music database...</p>
+                    </div>
+
+                    <div class="song-list" id="song-list">
+                        <div class="status-msg anim-element delay-2">
+                            <i class="fas fa-music" style="color: var(--accent-orange); margin-bottom: 10px; font-size: 1.5rem;"></i>
+                            <p>Search for your favorite songs</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="now-playing" id="now-playing">
+                <img src="https://via.placeholder.com/50" class="np-img" id="np-img">
+                <div class="np-info">
+                    <div class="np-title" id="np-title">Select a Song</div>
+                    <div class="np-artist" id="np-artist">...</div>
+                </div>
+                <div class="np-controls">
+                    <button class="np-btn np-btn-main" onclick="togglePlay()">
+                        <i class="fas fa-play" id="play-icon"></i>
+                    </button>
+                    <a href="#" class="np-dl" id="np-dl" download target="_blank">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+                <audio id="audio-player"></audio>
+            </div>
+
+            <nav class="navbar">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-music"></i>
+                </a>
+                <a href="/execution" class="nav-item">
+                    <i class="fas fa-bolt"></i>
+                </a>
+                <a href="/myinfo" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                </a>
+            </nav>
+
+            <div class="toast" id="toast">
+                <i class="fas fa-info-circle"></i>
+                <span id="toast-msg">Message here</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('mainSidebar').classList.toggle('active');
+            document.querySelector('.overlay-backdrop').classList.toggle('active');
+        }
+
+        const utils = {
+            toast: (msg, type = 'info') => {
+                const t = document.getElementById('toast');
+                const icon = t.querySelector('i');
+                
+                if (type === 'error') {
+                    icon.className = 'fas fa-circle-xmark';
+                    t.style.borderColor = '#ff4444';
+                } else if (type === 'success') {
+                    icon.className = 'fas fa-circle-check';
+                    t.style.borderColor = '#00ff88';
+                } else if (type === 'warning') {
+                    icon.className = 'fas fa-triangle-exclamation';
+                    t.style.borderColor = '#ffaa00';
+                } else {
+                    icon.className = 'fas fa-info-circle';
+                    t.style.borderColor = 'var(--accent-orange)';
+                }
+                
+                document.getElementById('toast-msg').innerText = msg;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 3000);
+            }
+        };
+
+        const audio = document.getElementById('audio-player');
+        const npImg = document.getElementById('np-img');
+        const playIcon = document.getElementById('play-icon');
+        let currentSong = null;
+        
+        async function searchMusic() {
+            const query = document.getElementById('search-input').value.trim();
+            const list = document.getElementById('song-list');
+            const loading = document.getElementById('loading');
+            
+            if (!query) {
+                utils.toast("Please enter a song name!", 'warning');
+                return;
+            }
+
+            list.innerHTML = '';
+            loading.style.display = 'block';
+
+            document.getElementById('search-input').blur();
+
+            try {
+                const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=15`);
+                const data = await res.json();
+
+                loading.style.display = 'none';
+
+                if (data.resultCount === 0) {
+                    list.innerHTML = '<div class="status-msg"><i class="fas fa-search" style="color: #aaa; margin-bottom: 10px;"></i><p>No results found</p></div>';
+                    utils.toast("No songs found", 'warning');
+                    return;
+                }
+
+                data.results.forEach((song, index) => {
+                    const artwork = song.artworkUrl100 ? song.artworkUrl100.replace('100x100', '300x300') : 'https://via.placeholder.com/300'; 
+                    const title = song.trackName || "Unknown Title";
+                    const artist = song.artistName || "Unknown Artist";
+                    const preview = song.previewUrl;
+                    
+                    if (!preview) return;
+
+                    const card = document.createElement('div');
+                    card.className = `song-item anim-element`;
+                    card.style.animationDelay = `${index * 0.05}s`;
+                    
+                    card.innerHTML = `
+                        <img src="${artwork}" class="song-img" alt="${title}">
+                        <div class="song-info">
+                            <div class="song-title">${title}</div>
+                            <div class="song-artist">${artist}</div>
+                        </div>
+                        <div class="song-action">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    `;
+
+                    card.onclick = () => {
+                        document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
+                        card.classList.add('active');
+                        
+                        card.querySelector('.song-action i').className = 'fas fa-pause';
+                        
+                        playSong(preview, title, artist, artwork);
+                    };
+                    
+                    list.appendChild(card);
+                });
+
+                utils.toast(`Found ${data.results.length} songs`, 'success');
+
+            } catch (error) {
+                console.error('Search error:', error);
+                loading.style.display = 'none';
+                list.innerHTML = '<div class="status-msg" style="color:#ff4444"><i class="fas fa-exclamation-triangle"></i><p>Connection Error</p></div>';
+                utils.toast("Network error - Check connection", 'error');
+            }
+        }
+
+        document.getElementById('search-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') searchMusic();
+        });
+
+        function playSong(url, title, artist, img) {
+            if (!url) {
+                utils.toast("Audio preview not available", 'error');
+                return;
+            }
+
+            const player = document.getElementById('now-playing');
+            currentSong = { url, title, artist, img };
+            
+            document.getElementById('np-title').innerText = title;
+            document.getElementById('np-artist').innerText = artist;
+            document.getElementById('np-img').src = img;
+            document.getElementById('np-dl').href = url;
+            
+            npImg.classList.remove('playing');
+            
+            audio.src = url;
+            audio.play().then(() => {
+                player.classList.add('active');
+                playIcon.className = "fas fa-pause";
+                npImg.classList.add('playing');
+            }).catch(e => {
+                console.log("Autoplay blocked:", e);
+                player.classList.add('active');
+                playIcon.className = "fas fa-play";
+                utils.toast("Click play button to start", 'info');
+            });
+        }
+
+        function togglePlay() {
+            if (!audio.src) {
+                utils.toast("No song selected", 'warning');
+                return;
+            }
+            
+            if (audio.paused) {
+                audio.play();
+                playIcon.className = "fas fa-pause";
+                npImg.classList.add('playing');
+            } else {
+                audio.pause();
+                playIcon.className = "fas fa-play";
+                npImg.classList.remove('playing');
+            }
+        }
+
+        audio.onended = () => {
+            playIcon.className = "fas fa-play";
+            npImg.classList.remove('playing');
+            utils.toast("Song ended", 'info');
+        };
+
+        audio.onerror = () => {
+            utils.toast("Error playing audio", 'error');
+            playIcon.className = "fas fa-play";
+            npImg.classList.remove('playing');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            setTimeout(() => {
+                utils.toast("Music Search Ready", 'success');
+            }, 1000);
+        });
+
+    </script>
+</body>
+</html>
