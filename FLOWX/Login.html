@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Samurai - Engine Access</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-red: #ff3333;
+      --secondary-red: #cc0000;
+      --accent-orange: #ff6600;
+      --accent-yellow: #ffcc00;
+      --glass-bg: rgba(30, 30, 30, 0.9);
+      --border-color: rgba(255, 100, 100, 0.2);
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      -webkit-tap-highlight-color: transparent; 
+      outline: none; 
+    }
+    
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    
+    body { 
+      background-color: #0a0a0a; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      background: radial-gradient(circle at 50% 20%, #331111 0%, #000 60%); 
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    
+    .container-lock {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+    
+    .app-container { 
+      width: 100%;
+      height: 100vh;
+      position: relative; 
+      display: flex; 
+      flex-direction: column; 
+      color: white; 
+      background: rgba(10, 10, 10, 0.95); 
+      overflow: hidden; 
+      border: 1px solid rgba(255, 50, 50, 0.1);
+    }
+
+    @media (min-width: 769px) {
+      .app-container {
+        max-width: 414px;
+        height: 90vh;
+        border-radius: 15px;
+      }
+    }
+
+    @keyframes fadeIn { 
+      from { opacity: 0; } 
+      to { opacity: 1; } 
+    }
+    
+    .anim-element { 
+      opacity: 0; 
+      animation: fadeIn 0.5s ease forwards; 
+    }
+    
+    .delay-1 { animation-delay: 0.1s; } 
+    .delay-2 { animation-delay: 0.2s; } 
+    .delay-3 { animation-delay: 0.3s; }
+
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 20px;
+      background: rgba(20, 20, 20, 0.9);
+      border-bottom: 1px solid rgba(255, 100, 100, 0.1);
+    }
+    
+    .header-title { 
+      font-family: 'Orbitron', sans-serif; 
+      font-size: 1.2rem; 
+      font-weight: 800; 
+      letter-spacing: 1px; 
+      color: #fff;
+      background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      flex: 1;
+    }
+    
+    .main-content { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 20px;
+      padding-bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .card { 
+      background: rgba(25, 25, 25, 0.8); 
+      border-radius: 15px; 
+      padding: 20px; 
+      border: 1px solid rgba(255, 100, 100, 0.2);
+      margin-bottom: 20px; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .logo-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+    }
+
+    .logo-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 50, 50, 0.3);
+      position: relative;
+      z-index: 2;
+      animation: pulseBorder 2s infinite ease-in-out;
+    }
+    
+    @keyframes pulseBorder {
+      0% {
+        border-color: rgba(255, 50, 50, 0.3);
+        box-shadow: 0 0 0 0 rgba(255, 50, 50, 0.4);
+      }
+      70% {
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 15px rgba(255, 50, 50, 0);
+      }
+      100% {
+        border-color: rgba(255, 50, 50, 0.3);
+        box-shadow: 0 0 0 0 rgba(255, 50, 50, 0);
+      }
+    }
+    
+    .logo-glow {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: radial-gradient(circle, rgba(255, 50, 50, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 1;
+      animation: pulseGlow 3s infinite alternate;
+    }
+    
+    @keyframes pulseGlow {
+      0% { opacity: 0.3; transform: scale(0.95); }
+      100% { opacity: 0.6; transform: scale(1.05); }
+    }
+    
+    .title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, #fff, var(--accent-orange), var(--primary-red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-orange);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 14px 14px 14px 50px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 100, 100, 0.2);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    
+    .form-input:focus {
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+    }
+    
+    .form-input:focus ~ .input-icon {
+      color: #fff;
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .form-input::placeholder {
+      color: #888;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .input-border {
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-orange), var(--primary-red));
+      transition: width 0.4s ease;
+      box-shadow: 0 0 10px var(--primary-red);
+      z-index: 1;
+    }
+    
+    .form-input:focus ~ .input-border {
+      width: 100%;
+    }
+    
+    .submit-btn {
+      width: 100%; 
+      padding: 15px;
+      background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+      border: none; 
+      border-radius: 12px;
+      color: white; 
+      font-family: 'Orbitron', sans-serif; 
+      font-weight: 700;
+      font-size: 1rem; 
+      cursor: pointer; 
+      transition: all 0.2s ease;
+      box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .submit-btn:active { 
+      transform: scale(0.98); 
+    }
+    
+    .submit-btn:disabled { 
+      opacity: 0.6; 
+      cursor: not-allowed; 
+    }
+
+    .submit-btn.loading {
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+    
+    .telegram-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 100, 100, 0.2);
+      border-radius: 10px;
+      color: #ddd;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .telegram-link:hover {
+      background: rgba(255, 50, 50, 0.15);
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+      transform: translateY(-1px);
+    }
+    
+    .telegram-link i {
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 100, 100, 0.2);
+      font-size: 0.75rem;
+      color: #888;
+    }
+    
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #10b981;
+      font-size: 0.75rem;
+    }
+    
+    .secure-badge i {
+      animation: pulse 2s infinite;
+      color: #10b981;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; text-shadow: 0 0 10px #10b981; }
+      100% { opacity: 0.5; }
+    }
+
+    .notification-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 350px;
+      z-index: 1000;
+    }
+
+    .notification {
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-left: 4px solid var(--accent-orange);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 5px 15px rgba(255, 100, 100, 0.3);
+      transform: translateX(400px);
+      opacity: 0;
+      animation: slideInNotification 0.5s forwards;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    @keyframes slideInNotification {
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .notification-icon {
+      font-size: 20px;
+      color: var(--accent-orange);
+      flex-shrink: 0;
+    }
+
+    .notification-content h4 {
+      color: #fff;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .notification-content p {
+      color: #ccc;
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .notification.success { border-left-color: #10b981; }
+    .notification.success .notification-icon { color: #10b981; }
+    .notification.error { border-left-color: #ef4444; }
+    .notification.error .notification-icon { color: #ef4444; }
+
+    .notification-close {
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      font-size: 16px;
+      transition: color 0.3s;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .notification-close:hover {
+      color: #fff;
+    }
+    
+    @media (max-width: 480px) {
+      .app-container {
+        padding: 0;
+      }
+      
+      .title {
+        font-size: 1.5rem;
+      }
+      
+      .logo-wrapper {
+        width: 85px;
+        height: 85px;
+      }
+      
+      .notification-panel {
+        width: 300px;
+        right: 10px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .notification-panel {
+        width: 280px;
+      }
+      
+      .form-input {
+        padding: 12px 12px 12px 45px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container-lock">
+    <div class="app-container">
+      <header>
+        <div class="header-title">SAMURAI ACCES</div>
+      </header>
+
+      <div class="main-content">
+        
+        <div class="card anim-element delay-1">
+          <div class="logo">
+            <div class="logo-wrapper">
+              <div class="logo-glow"></div>
+              <img class="logo-img" src="https://raw.githubusercontent.com/dirgaxnx/Upload/main/photo_1765470944622.jpg" alt="FlowX Logo">
+            </div>
+            <h1 class="title">SAMURAI ACCESS</h1>
+            <p class="subtitle">Secure Authentication Portal</p>
+          </div>
+          
+          <form method="POST" action="/auth" id="loginForm">
+            <div class="form-group">
+              <div class="input-wrapper">
+                <i class="fas fa-user-astronaut input-icon"></i>
+                <input type="text" class="form-input" name="username" placeholder="ENTER USERNAME" required autocomplete="off">
+                <span class="input-border"></span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <div class="input-wrapper">
+                <i class="fas fa-key input-icon"></i>
+                <input type="password" class="form-input" name="key" placeholder="ENTER ACCESS KEY" required>
+                <span class="input-border"></span>
+              </div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">
+              <i class="fa-solid fa-power-off"></i> INITIATE CONNECTION
+            </button>
+          </form>
+          
+          <a href="https://t.me/Popyeyeye" target="_blank" class="telegram-link">
+            <i class="fas fa-key"></i> ACQUIRE ACCESS KEY VIA TELEGRAM
+          </a>
+          
+          <div class="footer">
+            <span>© 2025 SAMURAI ENGINE | SECURE INTERFACE</span>
+            <div class="secure-badge">
+              <i class="fas fa-shield-halved"></i> TLS 4.0 ENCRYPTED
+            </div>
+          </div>
+        </div>
+
+        <div class="card anim-element delay-2">
+          <div style="text-align: center; color: #ccc; font-size: 0.85rem; padding: 15px;">
+            <p><i class="fas fa-exclamation-triangle" style="color: var(--accent-orange); margin-right: 8px;"></i> For authorized personnel only. Unauthorized access is strictly prohibited.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="notification-panel" id="notificationPanel"></div>
+  </div>
+
+  <script>
+    let currentNotification = null;
+    let notificationTimeout = null;
+    
+    function showNotification(type, title, message) {
+      if (currentNotification) {
+        currentNotification.style.animation = 'slideInNotification 0.5s reverse forwards';
+        setTimeout(() => {
+          if (currentNotification && currentNotification.parentNode) {
+            currentNotification.remove();
+            currentNotification = null;
+          }
+        }, 500);
+      }
+      
+      if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
+      }
+      
+      const panel = document.getElementById('notificationPanel');
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icons = {
+        info: 'fa-satellite-dish',
+        success: 'fa-check-circle',
+        warning: 'fa-exclamation-triangle',
+        error: 'fa-bug'
+      };
+
+      notification.innerHTML = `
+        <i class="fas ${icons[type]} notification-icon"></i>
+        <div class="notification-content">
+          <h4>${title}</h4>
+          <p>${message}</p>
+        </div>
+        <button class="notification-close"><i class="fas fa-times"></i></button>
+      `;
+
+      panel.appendChild(notification);
+      currentNotification = notification;
+      
+      notification.querySelector('.notification-close').addEventListener('click', () => {
+        notification.style.animation = 'slideInNotification 0.5s reverse forwards';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+            if (currentNotification === notification) {
+              currentNotification = null;
+            }
+          }
+        }, 500);
+      });
+
+      notificationTimeout = setTimeout(() => {
+        if (notification.parentNode) {
+          notification.style.animation = 'slideInNotification 0.5s reverse forwards';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+              if (currentNotification === notification) {
+                currentNotification = null;
+              }
+            }
+          }, 500);
+        }
+      }, 2000);
+    }
+
+    function setupLoginForm() {
+      const loginForm = document.getElementById('loginForm');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      const inputs = document.querySelectorAll('.form-input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          input.parentElement.querySelector('.input-icon').style.transform = 'scale(1.1)';
+        });
+        input.addEventListener('blur', () => {
+          input.parentElement.querySelector('.input-icon').style.transform = 'scale(1)';
+        });
+      });
+      
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('button');
+        const originalHTML = btn.innerHTML;
+        
+        btn.style.opacity = '0.8';
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> AUTHENTICATING...';
+        
+        showNotification('info', 'AUTHENTICATING', 'Verifying credentials...');
+        
+        setTimeout(() => {
+          this.submit();
+        }, 2000);
+      });
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      setupLoginForm();
+      
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get("msg");
+      if (msg) showNotification('info', 'SYSTEM NOTIFICATION', msg);
+      
+      showNotification('success', 'ACCESS PORTAL ACTIVE', 'Interface ready for authentication');
+    });
+    
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        showNotification('success', 'SYSTEM READY', 'All systems operational');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
